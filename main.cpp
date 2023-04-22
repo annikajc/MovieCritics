@@ -8,6 +8,10 @@ using namespace std;
 void ReadFromFile(vector<vector<string>> &data);
 vector<string> ParseData(string line);
 
+/* B+ Tree */
+struct Node;
+class BPlus;
+
 int main(){
     /* Declare variables here! */
     int menu1, menu2;
@@ -24,7 +28,8 @@ int main(){
         cout << "Which actor would you like to know about?\n";
     else if (menu1 == 2)
         cout << "Which movie would you like to know about?\n";
-    getline(cin, inputName); //FIXME: this line isn't working for some reason...
+    cin.ignore(); // https://www.tutorialspoint.com/what-is-the-use-of-cin-ignore-in-cplusplus
+    getline(cin, inputName); // Annika fixed by adding the above line
     cout << "1. Search using Map\n2. Search using B+ Tree\n";
     cin >> menu2;
 
@@ -53,7 +58,6 @@ void ReadFromFile(vector<vector<string>> &data){
 
     while (getline (file, line)) { //read the file line by line
         lineData.push_back(line); //adds each line to vector of lines
-
         /* Parse input lines */
         data.push_back(ParseData(line));
     }
@@ -84,4 +88,46 @@ vector<string> ParseData(string line){
     data.push_back(parsedLine.at(5));
 
     return data;
+}
+
+
+
+
+
+
+/* B+ TREE */
+
+struct Node {
+    string name;
+    double rating;
+    // depending on if it's for actors or movies
+    int numMovies;
+    vector<string> movieActors;
+    Node* left;
+    Node* right;
+
+    // Actors
+    Node(string name, double rating, int numMovies) : name(name), rating(rating), numMovies(numMovies) {}
+    // Movies
+    Node(string name, double rating, vector<string>movieActors) : name(name), rating(rating), movieActors() {}
+};
+
+class BPlus {
+    private:
+        int size;
+
+        void destructHelp(Node* node);
+
+    public:
+        Node* root;
+        BPlus() : root(nullptr), size(0) {} // constructor
+        ~BPlus() { destructHelp(root); } // destructor
+};
+
+void BPlus::destructHelp(Node* node) { // Annika's destructorHelp function from AVL Project
+    destructHelp(node->left); // recursively from the root
+    destructHelp(node->right);
+    node->left = nullptr; // clears links with children
+    node->right = nullptr;
+    delete node;
 }
