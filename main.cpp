@@ -1,12 +1,16 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 #include <fstream>
 
 using namespace std;
 
+/* Store Data */
 void ReadFromFile(vector<vector<string>> &data);
 vector<string> ParseData(string line);
+void StoreActorMap(vector<vector<string>> &data, map<string, pair<int, double>> &actorMap);
+void StoreMovieMap(vector<vector<string>> &data, map<string, pair<double, vector<string>>> &movieMap);
 
 /* B+ Tree */
 struct Node;
@@ -17,9 +21,11 @@ int main(){
     int menu1, menu2;
     string inputName; //stores the name of the actor or the movie to search for
     vector<vector<string>> data;
+    map<string, pair<int, double>> actorMap;
+    map<string, pair<double, vector<string>>> movieMap;
 
     /* Read data from file */
-    ReadFromFile(data); //FIXME: not working
+    ReadFromFile(data);
 
     /* Displays menu and takes in input from the user */
     cout << "Welcome!\n\nMenu:\n1. Search for Actor\n2. Search for Movie\n";
@@ -35,10 +41,12 @@ int main(){
 
     if (menu1 == 1 && menu2 == 1){
         /* Implement Actor Map */
+        StoreActorMap(data, actorMap);
     }
 
     else if (menu1 == 2 && menu2 == 1){
         /* Implement Movie Map */
+        StoreMovieMap(data, movieMap);
     }
 
     else if (menu1 == 1 && menu2 == 2){
@@ -53,7 +61,8 @@ int main(){
 void ReadFromFile(vector<vector<string>> &data){
     vector<string> lineData; //vector to store all data
     string line; //string to store each line
-    ifstream file("actorfilms.csv"); //file to read from
+    //FIXME: NEED RELATIVE PATH NOT ABSOLUTE BUT NOT WORKING OTHERWISE
+    ifstream file("/Users/soniacolagiuri/Documents/GitHub/MovieCritics/actorfilms.csv"); //file to read from
     getline (file, line); //first line stores header
 
     while (getline (file, line)) { //read the file line by line
@@ -71,13 +80,32 @@ vector<string> ParseData(string line){
 
     string word;
     line = line + ','; // add a delimiter to the end
+    bool movieNameHasCommas = false;
 
-    for (char i : line) { // traverse 'line' from left to right
-        if (i != ',')
-            word += i;
-        else {
-            parsedLine.push_back(word);
-            word = ""; // reset 'word'
+    for (int i = 0; i < line.size(); i++) { // traverse 'line' from left to right
+        if (parsedLine.size() == 2 && line.at(i) == '"' && line.at(i - 1) == ','){ // if next string will be the name of movie, and the next char combo is ',"'
+            movieNameHasCommas = true;
+            continue;
+        }
+
+        if (!movieNameHasCommas){
+            if (line.at(i) != ',')
+                word += line.at(i);
+            else {
+                parsedLine.push_back(word);
+                word = ""; // reset 'word'
+            }
+        }
+
+        else{
+            if (line.at(i) != '"')
+                word += line.at(i);
+            else {
+                parsedLine.push_back(word);
+                word = ""; // reset 'word'
+                movieNameHasCommas = false;
+                i++;
+            }
         }
     }
 
@@ -90,6 +118,30 @@ vector<string> ParseData(string line){
     return data;
 }
 
+void StoreActorMap(vector<vector<string>> &data, map<string, pair<int, double>> &actorMap){
+    string currActor = data.at(0).at(0); //first row actor
+    int count = 0;
+    double totalRating = 0;
+    for (auto & i : data) {
+        if (i.at(0) == currActor){
+            count++;
+            totalRating += stod(i.at(2));
+        }
+
+        else{
+            pair<int, double> currPair({count, totalRating/double(count)});
+            actorMap.insert({currActor, currPair}); //add prev data to map
+
+            currActor = i.at(0); // set curr actor to new val
+            count = 1; // reset variables
+            totalRating = stod(i.at(2));
+        }
+    }
+}
+
+void StoreMovieMap(vector<vector<string>> &data, map<string, pair<double, vector<string>>> &movieMap){
+
+}
 
 
 
