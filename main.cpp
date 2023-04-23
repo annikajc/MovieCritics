@@ -12,6 +12,9 @@ vector<string> ParseData(string line);
 void StoreActorMap(vector<vector<string>> &data, map<string, pair<int, double>> &actorMap);
 void StoreMovieMap(vector<vector<string>> &data, map<string, pair<double, vector<string>>> &movieMap);
 
+/* Search Data */
+void SearchActor(const string &actorName, map<string, pair<int, double>> &actorMap);
+
 /* B+ Tree */
 struct Node;
 class BPlus;
@@ -42,6 +45,7 @@ int main(){
     if (menu1 == 1 && menu2 == 1){
         /* Implement Actor Map */
         StoreActorMap(data, actorMap);
+        SearchActor(inputName, actorMap);
     }
 
     else if (menu1 == 2 && menu2 == 1){
@@ -141,6 +145,20 @@ void StoreActorMap(vector<vector<string>> &data, map<string, pair<int, double>> 
 
 void StoreMovieMap(vector<vector<string>> &data, map<string, pair<double, vector<string>>> &movieMap){
 
+}
+
+void SearchActor(const string &actorName, map<string, pair<int, double>> &actorMap){
+    bool inDataBase = false;
+    for (auto & it : actorMap) {
+        if (it.first == actorName){
+            inDataBase = true;
+            cout << "Actor " << it.first << " has appeared in " << it.second.first
+            << " movies, and has an average rating of " << it.second.second << ".\n";
+        }
+    }
+
+    if (!inDataBase)
+        cout << "Error: This actor does not appear in the database.\n";
 }
 
 
