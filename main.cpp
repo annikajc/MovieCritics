@@ -21,7 +21,7 @@ class BPlus;
 
 int main(){
     /* Declare variables here! */
-    int menu1, menu2;
+    int menu1 = 0, menu2;
     string inputName; //stores the name of the actor or the movie to search for
     vector<vector<string>> data;
     map<string, pair<int, double>> actorMap;
@@ -31,34 +31,43 @@ int main(){
     ReadFromFile(data);
 
     /* Displays menu and takes in input from the user */
-    cout << "Welcome!\n\nMenu:\n1. Search for Actor\n2. Search for Movie\n";
-    cin >> menu1;
-    if (menu1 == 1)
-        cout << "Which actor would you like to know about?\n";
-    else if (menu1 == 2)
-        cout << "Which movie would you like to know about?\n";
-    cin.ignore(); // https://www.tutorialspoint.com/what-is-the-use-of-cin-ignore-in-cplusplus
-    getline(cin, inputName); // Annika fixed by adding the above line
-    cout << "1. Search using Map\n2. Search using B+ Tree\n";
-    cin >> menu2;
+    cout << "Welcome!\n";
 
-    if (menu1 == 1 && menu2 == 1){
-        /* Implement Actor Map */
-        StoreActorMap(data, actorMap);
-        SearchActor(inputName, actorMap);
-    }
+    while(true){
+        cout << "\nMenu:\n1. Search for Actor\n2. Search for Movie\nPress any other key to Exit\n";
+        cin >> menu1;
+        if (menu1 == 1)
+            cout << "Which actor would you like to know about?\n";
+        else if (menu1 == 2)
+            cout << "Which movie would you like to know about?\n";
+        else
+            break;
+        cin.ignore(); // https://www.tutorialspoint.com/what-is-the-use-of-cin-ignore-in-cplusplus
+        getline(cin, inputName); // Annika fixed by adding the above line
+        cout << "1. Search using Map\n2. Search using B+ Tree\nPress any other key to Exit\n";
+        cin >> menu2;
 
-    else if (menu1 == 2 && menu2 == 1){
-        /* Implement Movie Map */
-        StoreMovieMap(data, movieMap);
-    }
+        if (menu1 == 1 && menu2 == 1){
+            /* Implement Actor Map */
+            StoreActorMap(data, actorMap);
+            SearchActor(inputName, actorMap);
+        }
 
-    else if (menu1 == 1 && menu2 == 2){
-        /* Implement Actor B+ Tree */
-    }
+        else if (menu1 == 2 && menu2 == 1){
+            /* Implement Movie Map */
+            StoreMovieMap(data, movieMap);
+        }
 
-    else if (menu1 == 2 && menu2 == 2){
-        /* Implement Movie B+ Tree */
+        else if (menu1 == 1 && menu2 == 2){
+            /* Implement Actor B+ Tree */
+        }
+
+        else if (menu1 == 2 && menu2 == 2){
+            /* Implement Movie B+ Tree */
+        }
+
+        else
+            break;
     }
 }
 
@@ -149,8 +158,17 @@ void StoreMovieMap(vector<vector<string>> &data, map<string, pair<double, vector
 
 void SearchActor(const string &actorName, map<string, pair<int, double>> &actorMap){
     bool inDataBase = false;
+
+    string lowerActorName;
+    for (char i : actorName) //make input string lowercase
+        lowerActorName += tolower(i);
+
     for (auto & it : actorMap) {
-        if (it.first == actorName){
+        string lowerName;
+        for (char i : it.first) //make current name lowercase
+            lowerName += tolower(i);
+
+        if (lowerName == lowerActorName){
             inDataBase = true;
             cout << "Actor " << it.first << " has appeared in " << it.second.first
             << " movies, and has an average rating of " << it.second.second << ".\n";
