@@ -11,13 +11,15 @@ void ReadFromFile(vector<vector<string>> &data);
 vector<string> ParseData(string line);
 void StoreActorMap(vector<vector<string>> &data, map<string, pair<int, double>> &actorMap);
 void StoreMovieMap(vector<vector<string>> &data, map<string, pair<double, vector<string>>> &movieMap);
+void StoreActorVec(vector<vector<string>> &data, vector<tuple<string, double, int>> &actorVec);
+void StoreMovieVec(vector<vector<string>> &data, vector<pair<string, double>> &movieVec);
 
 /* Search Data */
 void SearchActor(const string &actorName, map<string, pair<int, double>> &actorMap);
 void SearchMovie(const string &movieName, map<string, pair<double, vector<string>>> &movieMap);
 
 /* Sort Data */
-
+// void ActorQuickSort(vector<tuple<string, double, int>> &actorQS);
 
 int main(){
     /* Declare variables here! */
@@ -26,6 +28,14 @@ int main(){
     vector<vector<string>> data;
     map<string, pair<int, double>> actorMap;
     map<string, pair<double, vector<string>>> movieMap;
+    vector<tuple<string, double, int>> actorMS;
+    vector<pair<string, double>> movieMS;
+    vector<tuple<string, double, int>> actorQS;
+    vector<pair<string, double>> movieQS;
+    bool isActorMS = false;
+    bool isMovieMS = false;
+    bool isActorQS = false; // keep track if vector has been quick sorted
+    bool isMovieQS = false;
 
     /* Read data from file */
     ReadFromFile(data);
@@ -72,14 +82,24 @@ int main(){
             /* Implement Merge Sort Actor Ranking */
 
             //write a function that stores actors in order of ranking using merge sort
+            if(!isActorMS) { // prevents from sorting an already sorted vector
+                StoreActorVec(data, actorMS);
+                // merge sort
+                isActorMS = true;
+            }
             //break ties with actor that appears in more movies!
             //write a function that prints out a ranked list of the top 100 actors
         }
 
         else if (menu1 == 3 && menu2 == 2){
             /* Implement Quick Sort Actor Ranking */
-
+            
             //write a function that stores actors in order of ranking using quick sort
+            if (!isActorQS) {
+                StoreActorVec(data, actorQS);
+                // quick sort
+                isActorQS = true;
+            }
             //break ties with actor that appears in more movies!
             //write a function that prints out a ranked list of the top 100 actors
         }
@@ -95,6 +115,11 @@ int main(){
             /* Implement Quick Sort Movie Ranking */
 
             //write a function that stores movies in order of ranking using quick sort
+            if (!isMovieQS) {
+                StoreMovieVec(data, movieQS);
+                // quick sort
+                isMovieQS = true;
+            }
             //write a function that prints out a ranked list of the top 100 movies
         }
 
@@ -106,8 +131,8 @@ int main(){
 void ReadFromFile(vector<vector<string>> &data){
     vector<string> lineData; //vector to store all data
     string line; //string to store each line
-    //FIXME: NEED RELATIVE PATH NOT ABSOLUTE BUT NOT WORKING OTHERWISE
-    ifstream file("/Users/soniacolagiuri/Documents/GitHub/MovieCritics/actorfilms.csv"); //file to read from
+    // Below should work now
+    ifstream file("actorfilms.csv"); //file to read from
     getline (file, line); //first line stores header
 
     while (getline (file, line)) { //read the file line by line
@@ -199,6 +224,40 @@ void StoreMovieMap(vector<vector<string>> &data, map<string, pair<double, vector
             pair<double, vector<string>> newPair({rating, currVector});
             movieMap[i.at(1)] = newPair;
         }
+    }
+}
+
+void StoreActorVec(vector<vector<string>> &data, vector<tuple<string, double, int>> &actorVec) {
+    string currActor = data.at(0).at(0); //first row actor
+    int count = 0;
+    double totalRating = 0;
+    for (auto & i : data) {
+        if (i.at(0) == currActor){
+            count++;
+            totalRating += stod(i.at(2));
+        }
+
+        else{
+            actorVec.push_back(make_tuple(currActor, totalRating/double(count), count)); // add to vector
+
+            currActor = i.at(0); // set curr actor to new val
+            count = 1; // reset variables
+            totalRating = stod(i.at(2));
+        }
+    }
+}
+
+void StoreMovieVec(vector<vector<string>> &data, vector<pair<string, double>> &movieVec) {
+     for (auto & i : data) {
+        bool movieFound = false;
+        for (int j = 0; j < movieVec.size(); j++) {
+            if (i.at(1) == movieVec[j].first) {
+                movieFound = true;
+                break;
+            }
+        }
+        if (!movieFound)
+            movieVec.push_back(make_pair(i.at(1), stod(i.at(2))));
     }
 }
 
