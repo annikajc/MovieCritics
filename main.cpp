@@ -22,7 +22,7 @@ class BPlus;
 
 int main(){
     /* Declare variables here! */
-    int menu1 = 0, menu2;
+    int menu1 = 0, menu2 = 0;
     string inputName; //stores the name of the actor or the movie to search for
     vector<vector<string>> data;
     map<string, pair<int, double>> actorMap;
@@ -35,37 +35,68 @@ int main(){
     cout << "Welcome!\n";
 
     while(true){
-        cout << "\nMenu:\n1. Search for Actor\n2. Search for Movie\nPress any other key to Exit\n";
+        cout << "\nMenu:\n1. Search for an Actor\n2. Search for a Movie\n3. Print Top 100 Actors\n4. Print Top 100 Movies\nPress any other key to Exit\n";
         cin >> menu1;
-        if (menu1 == 1)
-            cout << "Which actor would you like to know about?\n";
-        else if (menu1 == 2)
-            cout << "Which movie would you like to know about?\n";
+        if (menu1 == 1 || menu1 == 2) {
+            if (menu1 == 1)
+                cout << "Which actor would you like to know about?\n";
+            else if (menu1 == 2) {
+                cout << "Which movie would you like to know about?\n";
+                cin.ignore();
+                getline(cin, inputName);
+            }
+        }
+
+        else if (menu1 == 3 || menu1 == 4){
+            cout << "Which sorting algorithm would you like to use?\n1. Merge Sort\n2. Quick Sort\n";
+            cin >> menu2;
+        }
+
         else
             break;
-        cin.ignore(); // https://www.tutorialspoint.com/what-is-the-use-of-cin-ignore-in-cplusplus
-        getline(cin, inputName); // Annika fixed by adding the above line
-        cout << "1. Search using Map\n2. Search using B+ Tree\nPress any other key to Exit\n";
-        cin >> menu2;
 
-        if (menu1 == 1 && menu2 == 1){
+        if (menu1 == 1){
             /* Implement Actor Map */
             StoreActorMap(data, actorMap);
             SearchActor(inputName, actorMap);
+            //implement printing individual rank
         }
 
-        else if (menu1 == 2 && menu2 == 1){
+        else if (menu1 == 2){
             /* Implement Movie Map */
             StoreMovieMap(data, movieMap);
             SearchMovie(inputName, movieMap);
+            //implement printing individual rank
         }
 
-        else if (menu1 == 1 && menu2 == 2){
-            /* Implement Actor B+ Tree */
+        else if (menu1 == 3 && menu2 == 1){
+            /* Implement Merge Sort Actor Ranking */
+
+            //write a function that stores actors in order of ranking using merge sort
+            //break ties with actor that appears in more movies!
+            //write a function that prints out a ranked list of the top 100 actors
         }
 
-        else if (menu1 == 2 && menu2 == 2){
-            /* Implement Movie B+ Tree */
+        else if (menu1 == 3 && menu2 == 2){
+            /* Implement Quick Sort Actor Ranking */
+
+            //write a function that stores actors in order of ranking using quick sort
+            //break ties with actor that appears in more movies!
+            //write a function that prints out a ranked list of the top 100 actors
+        }
+
+        else if (menu1 == 4 && menu2 == 1){
+            /* Implement Merge Sort Movie Ranking */
+
+            //write a function that stores movies in order of ranking using merge sort
+            //write a function that prints out a ranked list of the top 100 movies
+        }
+
+        else if (menu1 == 4 && menu2 == 2){
+            /* Implement Quick Sort Movie Ranking */
+
+            //write a function that stores movies in order of ranking using quick sort
+            //write a function that prints out a ranked list of the top 100 movies
         }
 
         else
@@ -92,7 +123,6 @@ void ReadFromFile(vector<vector<string>> &data){
 vector<string> ParseData(string line){
     vector<string> parsedLine;
     vector<string> data;
-
     string word;
     line = line + ','; // add a delimiter to the end
     bool movieNameHasCommas = false;
@@ -125,10 +155,9 @@ vector<string> ParseData(string line){
     }
 
     //each line contains: 0:Actor,1:ActorID,2:Film,3:Year,4:Votes,5:Rating,6:FilmID
-    //delete all data other than actor, film, rating
-    data.push_back(parsedLine.at(0));
-    data.push_back(parsedLine.at(2));
-    data.push_back(parsedLine.at(5));
+    data.push_back(parsedLine.at(0)); //actor
+    data.push_back(parsedLine.at(2)); //film
+    data.push_back(parsedLine.at(5)); //rating
 
     return data;
 }
@@ -165,9 +194,9 @@ void StoreMovieMap(vector<vector<string>> &data, map<string, pair<double, vector
 
         else{
             pair<double, vector<string>> currPair({movieMap[i.at(1)]});
-            vector<string> currVector = currPair.second;
+            vector<string> currVector = currPair.second; //get actor vector
             double rating = stod(i.at(2));
-            currVector.push_back(i.at(0));
+            currVector.push_back(i.at(0)); //add to actor vector
             pair<double, vector<string>> newPair({rating, currVector});
             movieMap[i.at(1)] = newPair;
         }
