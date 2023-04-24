@@ -44,9 +44,9 @@ int main(){
                 cout << "Which actor would you like to know about?\n";
             else if (menu1 == 2) {
                 cout << "Which movie would you like to know about?\n";
-                cin.ignore();
-                getline(cin, inputName);
             }
+            cin.ignore();
+            getline(cin, inputName);
         }
 
         else if (menu1 == 3 || menu1 == 4){
