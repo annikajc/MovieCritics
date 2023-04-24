@@ -18,9 +18,6 @@ void SearchMovie(const string &movieName, map<string, pair<double, vector<string
 
 /* Sort Data */
 
-/* B+ Tree */
-struct Node;
-class BPlus;
 
 int main(){
     /* Declare variables here! */
@@ -255,45 +252,4 @@ void SearchMovie(const string &movieName, map<string, pair<double, vector<string
 
     if (!inDataBase)
         cout << "Error: This movie does not appear in the database.\n";
-}
-
-
-
-
-
-/* B+ TREE */
-
-struct Node {
-    string name;
-    double rating;
-    // depending on if it's for actors or movies
-    int numMovies;
-    vector<string> movieActors;
-    Node* left;
-    Node* right;
-
-    // Actors
-    Node(string name, double rating, int numMovies) : name(name), rating(rating), numMovies(numMovies) {}
-    // Movies
-    Node(string name, double rating, vector<string>movieActors) : name(name), rating(rating), movieActors() {}
-};
-
-class BPlus {
-    private:
-        int size;
-
-        void destructHelp(Node* node);
-
-    public:
-        Node* root;
-        BPlus() : root(nullptr), size(0) {} // constructor
-        ~BPlus() { destructHelp(root); } // destructor
-};
-
-void BPlus::destructHelp(Node* node) { // Annika's destructorHelp function from AVL Project
-    destructHelp(node->left); // recursively from the root
-    destructHelp(node->right);
-    node->left = nullptr; // clear links with children
-    node->right = nullptr;
-    delete node;
 }
