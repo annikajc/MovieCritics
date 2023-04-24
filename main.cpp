@@ -14,6 +14,7 @@ void StoreMovieMap(vector<vector<string>> &data, map<string, pair<double, vector
 
 /* Search Data */
 void SearchActor(const string &actorName, map<string, pair<int, double>> &actorMap);
+void SearchMovie(const string &movieName, map<string, pair<double, vector<string>>> &movieMap);
 
 /* B+ Tree */
 struct Node;
@@ -56,6 +57,7 @@ int main(){
         else if (menu1 == 2 && menu2 == 1){
             /* Implement Movie Map */
             StoreMovieMap(data, movieMap);
+            SearchMovie(inputName, movieMap);
         }
 
         else if (menu1 == 1 && menu2 == 2){
@@ -153,7 +155,23 @@ void StoreActorMap(vector<vector<string>> &data, map<string, pair<int, double>> 
 }
 
 void StoreMovieMap(vector<vector<string>> &data, map<string, pair<double, vector<string>>> &movieMap){
+    //iterate through data vector
+    //check 2nd index and add that movie to map, store the rating, and store that actor into its vector of strings  - if already in map, DO NOT store rating again
 
+    for (auto & i : data) {
+        if (movieMap.find(i.at(1)) == movieMap.end()){ //if not in map yet
+            movieMap.insert({i.at(1), {stod(i.at(2)), {i.at(0)}}}); //add it to map
+        }
+
+        else{
+            pair<double, vector<string>> currPair({movieMap[i.at(1)]});
+            vector<string> currVector = currPair.second;
+            double rating = stod(i.at(2));
+            currVector.push_back(i.at(0));
+            pair<double, vector<string>> newPair({rating, currVector});
+            movieMap[i.at(1)] = newPair;
+        }
+    }
 }
 
 void SearchActor(const string &actorName, map<string, pair<int, double>> &actorMap){
@@ -177,6 +195,35 @@ void SearchActor(const string &actorName, map<string, pair<int, double>> &actorM
 
     if (!inDataBase)
         cout << "Error: This actor does not appear in the database.\n";
+}
+
+void SearchMovie(const string &movieName, map<string, pair<double, vector<string>>> &movieMap){
+    bool inDataBase = false;
+
+    string lowerMovieName;
+    for (char i : movieName) //make input string lowercase
+        lowerMovieName += tolower(i);
+
+    for (auto & it : movieMap) {
+        string lowerName;
+        for (char i : it.first) //make current name lowercase
+            lowerName += tolower(i);
+
+        if (lowerName == lowerMovieName){
+            inDataBase = true;
+            cout << "The movie " << it.first << " has an IMDB rating of " << it.second.first
+                 << ", and features the following actors: ";
+            for (int i = 0; i < it.second.second.size(); ++i) {
+                if (i == it.second.second.size() - 1)
+                    cout << "and " << it.second.second.at(i) << ".\n";
+                else
+                    cout << it.second.second.at(i) << ", ";
+            }
+        }
+    }
+
+    if (!inDataBase)
+        cout << "Error: This movie does not appear in the database.\n";
 }
 
 
