@@ -262,7 +262,7 @@ class BPlus {
 void BPlus::destructHelp(Node* node) { // Annika's destructorHelp function from AVL Project
     destructHelp(node->left); // recursively from the root
     destructHelp(node->right);
-    node->left = nullptr; // clears links with children
+    node->left = nullptr; // clear links with children
     node->right = nullptr;
     delete node;
 }
