@@ -20,9 +20,12 @@ void SearchMovie(const string &movieName, map<string, pair<double, vector<string
 
 /* Sort Data */
 void TopActorsPrint(vector<tuple<string, double, int>> &vec);
+void TopMoviesPrint(vector<pair<string, double>> &vec);
 // QuickSort
-int Partition(vector<tuple<string, double, int>> &vec, int low, int high);
+int ActorPartition(vector<tuple<string, double, int>> &vec, int low, int high);
 void ActorQuickSort(vector<tuple<string, double, int>> &actorQS, int low, int high);
+int MoviePartition(vector<pair<string, double>> &vec, int low, int high);
+void MovieQuickSort(vector<pair<string, double>> &movieQS, int low, int high);
 
 
 int main(){
@@ -90,28 +93,30 @@ int main(){
             }
             //break ties with actor that appears in more movies!
             //write a function that prints out a ranked list of the top 100 actors
+            TopActorsPrint(actorMS);
         }
 
         else if (menu1 == 3 && menu2 == 2){
             /* Implement Quick Sort Actor Ranking */
-            
-            //write a function that stores actors in order of ranking using quick sort
             if (!isActorQS) {
                 StoreActorVec(data, actorQS);
-                // quick sort
                 ActorQuickSort(actorQS, 0, actorQS.size() - 1);
                 isActorQS = true;
             }
             TopActorsPrint(actorQS);
-            //break ties with actor that appears in more movies!
-            //write a function that prints out a ranked list of the top 100 actors
         }
 
         else if (menu1 == 4 && menu2 == 1){
             /* Implement Merge Sort Movie Ranking */
 
             //write a function that stores movies in order of ranking using merge sort
+            if (!isMovieMS) {
+                StoreMovieVec(data, movieMS);
+                // merge sort
+                isMovieMS = true;
+            }
             //write a function that prints out a ranked list of the top 100 movies
+            TopMoviesPrint(movieMS);
         }
 
         else if (menu1 == 4 && menu2 == 2){
@@ -120,10 +125,10 @@ int main(){
             //write a function that stores movies in order of ranking using quick sort
             if (!isMovieQS) {
                 StoreMovieVec(data, movieQS);
-                // quick sort
+                MovieQuickSort(movieQS, 0, movieQS.size() - 1);
                 isMovieQS = true;
             }
-            //write a function that prints out a ranked list of the top 100 movies
+            TopMoviesPrint(movieQS);
         }
 
         else
@@ -251,7 +256,7 @@ void StoreActorVec(vector<vector<string>> &data, vector<tuple<string, double, in
 }
 
 void StoreMovieVec(vector<vector<string>> &data, vector<pair<string, double>> &movieVec) {
-     for (auto & i : data) {
+    for (auto & i : data) {
         bool movieFound = false;
         for (int j = 0; j < movieVec.size(); j++) {
             if (i.at(1) == movieVec.at(j).first) {
@@ -259,9 +264,11 @@ void StoreMovieVec(vector<vector<string>> &data, vector<pair<string, double>> &m
                 break;
             }
         }
-        if (!movieFound)
+        if (!movieFound) {
             movieVec.push_back(make_pair(i.at(1), stod(i.at(2))));
+        }
     }
+    cout << "StoreMovieVec Successful" << endl;
 }
 
 void SearchActor(const string &actorName, map<string, pair<int, double>> &actorMap){
@@ -324,12 +331,21 @@ void TopActorsPrint(vector<tuple<string, double, int>> &vec) { // prints top 100
     cout << "Top 100 Actors:\n";
     int num = 1;
     for (int i = 0; i < 100; i++) {
-        cout << num << ". " << get<0>(vec[i]) << ", " << get<1>(vec[i]) << endl; // #. Actor, Rating
+        cout << num << ". " << get<0>(vec[i]) << " - " << get<1>(vec[i]) << endl; // #. Actor, Rating
         num++;
     }
 }
 
-int Partition(vector<tuple<string, double, int>> &vec, int low, int high) { // swaps based on where pivot is
+void TopMoviesPrint(vector<pair<string, double>> &vec) {
+    cout << "Top 100 Movies:\n";
+    int num = 1;
+    for (int i = 0; i < 100; i++) {
+        cout << num << ". " << vec[i].first << " - " << vec[i].second << endl; // #. Movie, Rating
+        num++;
+    }
+}
+
+int ActorPartition(vector<tuple<string, double, int>> &vec, int low, int high) { // swaps based on where pivot is
     string pivotName = get<0>(vec[low]);
     double pivotRating = get<1>(vec[low]);
     int pivotMovies = get<2>(vec[low]);
@@ -368,9 +384,58 @@ int Partition(vector<tuple<string, double, int>> &vec, int low, int high) { // s
 }
 
 void ActorQuickSort(vector<tuple<string, double, int>> &actorQS, int low, int high) { // quick sort for actor vector
+    cout << "Sorting...\n";
     if (low < high) { // prevents from infinite recursion
-        int pivotIndex = Partition(actorQS, low, high);
+        int pivotIndex = ActorPartition(actorQS, low, high);
         ActorQuickSort(actorQS, low, pivotIndex - 1); // bottom half
         ActorQuickSort(actorQS, pivotIndex + 1, high); // top half
+    }
+    cout << "Sort successful\n";
+}
+
+int MoviePartition(vector<pair<string, double>> &vec, int low, int high) { // swaps based on where pivot is
+    string pivotName = vec[low].first;
+    double pivotRating = vec[low].second;
+    int count = 0;
+
+    for (int i = low + 1; i <= high; i++) { // find where pivot lies
+        if (vec[i].second >= pivotRating)
+            count++;
+    }
+
+    int pivotIndex = low + count;
+    swap(vec[pivotIndex], vec[low]); // put pivot in its index
+    int i = low, j = high;
+
+    while (i < pivotIndex && j > pivotIndex) {
+        while (vec[i].second >= pivotRating) // find 1st rating on the left less than pivot
+            i++;
+        while (vec[j].second < pivotRating) // find 1st rating on the right greater than pivot
+            j--;
+        if (i < pivotIndex && j > pivotIndex) // swap if they're still on their respective sides
+            swap(vec[i++], vec[j--]);
+    }
+
+    for (int i = pivotIndex - 1; i >= low; i--) {
+        if (vec[i].second == pivotRating) { // same rating, different name
+            if (vec[i].first > pivotName) { // swap if alphabetical order is not maintained
+                swap(vec[i], vec[pivotIndex]);
+                pivotIndex = i;
+            }
+        }
+        else {
+            break;
+        }
+    }
+
+    return pivotIndex;
+}
+
+// cannot be replaced w/ template class bc of the partition method called
+void MovieQuickSort(vector<pair<string, double>> &movieQS, int low, int high) { // quick sort for movie vector
+    if (low < high) { // prevents from infinite recursion
+        int pivotIndex = MoviePartition(movieQS, low, high);
+        MovieQuickSort(movieQS, low, pivotIndex - 1); // bottom half
+        MovieQuickSort(movieQS, pivotIndex + 1, high); // top half
     }
 }
