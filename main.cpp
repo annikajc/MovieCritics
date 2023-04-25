@@ -19,7 +19,11 @@ void SearchActor(const string &actorName, map<string, pair<int, double>> &actorM
 void SearchMovie(const string &movieName, map<string, pair<double, vector<string>>> &movieMap);
 
 /* Sort Data */
-// void ActorQuickSort(vector<tuple<string, double, int>> &actorQS);
+void TopActorsPrint(vector<tuple<string, double, int>> &vec);
+// QuickSort
+int Partition(vector<tuple<string, double, int>> &vec, int low, int high);
+void ActorQuickSort(vector<tuple<string, double, int>> &actorQS, int low, int high);
+
 
 int main(){
     /* Declare variables here! */
@@ -32,11 +36,8 @@ int main(){
     vector<pair<string, double>> movieMS;
     vector<tuple<string, double, int>> actorQS;
     vector<pair<string, double>> movieQS;
-    bool isActorMS = false;
-    bool isMovieMS = false;
-    bool isActorQS = false; // keep track if vector has been quick sorted
-    bool isMovieQS = false;
-
+    bool isActorMS, isMovieMS, isActorQS, isMovieQS = false; // keep track if vector has already been sorted
+    
     /* Read data from file */
     ReadFromFile(data);
 
@@ -98,8 +99,10 @@ int main(){
             if (!isActorQS) {
                 StoreActorVec(data, actorQS);
                 // quick sort
+                ActorQuickSort(actorQS, 0, actorQS.size() - 1);
                 isActorQS = true;
             }
+            TopActorsPrint(actorQS);
             //break ties with actor that appears in more movies!
             //write a function that prints out a ranked list of the top 100 actors
         }
@@ -132,7 +135,7 @@ void ReadFromFile(vector<vector<string>> &data){
     vector<string> lineData; //vector to store all data
     string line; //string to store each line
     // Below should work now
-    ifstream file("actorfilms.csv"); //file to read from
+    ifstream file("cmake-build-debug/actorfilms.csv"); //file to read from
     getline (file, line); //first line stores header
 
     while (getline (file, line)) { //read the file line by line
@@ -227,7 +230,7 @@ void StoreMovieMap(vector<vector<string>> &data, map<string, pair<double, vector
     }
 }
 
-void StoreActorVec(vector<vector<string>> &data, vector<tuple<string, double, int>> &actorVec) {
+void StoreActorVec(vector<vector<string>> &data, vector<tuple<string, double, int>> &actorVec) { // store for sorting
     string currActor = data.at(0).at(0); //first row actor
     int count = 0;
     double totalRating = 0;
@@ -251,7 +254,7 @@ void StoreMovieVec(vector<vector<string>> &data, vector<pair<string, double>> &m
      for (auto & i : data) {
         bool movieFound = false;
         for (int j = 0; j < movieVec.size(); j++) {
-            if (i.at(1) == movieVec[j].first) {
+            if (i.at(1) == movieVec.at(j).first) {
                 movieFound = true;
                 break;
             }
@@ -275,8 +278,12 @@ void SearchActor(const string &actorName, map<string, pair<int, double>> &actorM
 
         if (lowerName == lowerActorName){
             inDataBase = true;
-            cout << "Actor " << it.first << " has appeared in " << it.second.first
-            << " movies, and has an average rating of " << it.second.second << ".\n";
+            if (it.second.first == 1)
+                cout << "Actor " << it.first << " has appeared in " << it.second.first
+                << " movie, and has an average rating of " << it.second.second << ".\n";
+            else
+                cout << "Actor " << it.first << " has appeared in " << it.second.first
+                << " movies, and has an average rating of " << it.second.second << ".\n";
         }
     }
 
@@ -311,4 +318,59 @@ void SearchMovie(const string &movieName, map<string, pair<double, vector<string
 
     if (!inDataBase)
         cout << "Error: This movie does not appear in the database.\n";
+}
+
+void TopActorsPrint(vector<tuple<string, double, int>> &vec) { // prints top 100 actors
+    cout << "Top 100 Actors:\n";
+    int num = 1;
+    for (int i = 0; i < 100; i++) {
+        cout << num << ". " << get<0>(vec[i]) << ", " << get<1>(vec[i]) << endl; // #. Actor, Rating
+        num++;
+    }
+}
+
+int Partition(vector<tuple<string, double, int>> &vec, int low, int high) { // swaps based on where pivot is
+    string pivotName = get<0>(vec[low]);
+    double pivotRating = get<1>(vec[low]);
+    int pivotMovies = get<2>(vec[low]);
+    int count = 0;
+
+    for (int i = low + 1; i <= high; i++) { // find where pivot lies
+        if (get<1>(vec[i]) >= pivotRating)
+            count++;
+    }
+
+    int pivotIndex = low + count;
+    swap(vec[pivotIndex], vec[low]); // put pivot in its index
+    int i = low, j = high;
+
+    while (i < pivotIndex && j > pivotIndex) {
+        while (get<1>(vec[i]) >= pivotRating) // find 1st rating on the left less than pivot
+            i++;
+        while (get<1>(vec[j]) < pivotRating) // find 1st rating on the right greater than pivot
+            j--;
+        if (i < pivotIndex && j > pivotIndex) // swap if they're still on their respective sides
+            swap(vec[i++], vec[j--]);
+    }
+
+    for (int i = pivotIndex - 1; i >= low; i--) {
+        if (get<1>(vec[i]) == pivotRating) { // same rating, different number of movies
+            if (get<2>(vec[i]) > pivotMovies) { // more movies = higher rating
+                swap(vec[i], vec[pivotIndex]);
+                pivotIndex = i;
+            }
+        }
+        else
+            break;
+    }
+
+    return pivotIndex;
+}
+
+void ActorQuickSort(vector<tuple<string, double, int>> &actorQS, int low, int high) { // quick sort for actor vector
+    if (low < high) { // prevents from infinite recursion
+        int pivotIndex = Partition(actorQS, low, high);
+        ActorQuickSort(actorQS, low, pivotIndex - 1); // bottom half
+        ActorQuickSort(actorQS, pivotIndex + 1, high); // top half
+    }
 }
