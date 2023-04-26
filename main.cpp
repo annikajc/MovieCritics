@@ -26,6 +26,8 @@ int ActorPartition(vector<tuple<string, double, int>> &vec, int low, int high);
 void ActorQuickSort(vector<tuple<string, double, int>> &actorQS, int low, int high);
 int MoviePartition(vector<pair<string, double>> &vec, int low, int high);
 void MovieQuickSort(vector<pair<string, double>> &movieQS, int low, int high);
+void mergeMovies(vector<pair<string, double>> &movieMS, int left, int mid, int right);
+void mergeSortMovies(vector<pair<string, double>> &movieMS, int left, int right);
 
 
 int main(){
