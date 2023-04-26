@@ -442,7 +442,7 @@ void MovieQuickSort(vector<pair<string, double>> &movieQS, int low, int high) { 
 }
 
 
-void mergeMovies(vector<pair<string, double>> movieMS, int left, int mid, int right) {
+void mergeMovies(vector<pair<string, double>> &movieMS, int left, int mid, int right) {
 
         int n1 = mid - left + 1;
         int n2 = right - mid;
@@ -481,7 +481,7 @@ void mergeMovies(vector<pair<string, double>> movieMS, int left, int mid, int ri
         }
     }
 
-void mergeSortMovies(vector<pair<string, double>> movieMS, int left, int right) {
+void mergeSortMovies(vector<pair<string, double>> &movieMS, int left, int right) {
     if (left < right) {
         int mid = left + (right - left) / 2;
         mergeSortMovies(movieMS, left, mid);
