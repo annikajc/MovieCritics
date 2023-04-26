@@ -112,6 +112,7 @@ int main(){
             //write a function that stores movies in order of ranking using merge sort
             if (!isMovieMS) {
                 StoreMovieVec(data, movieMS);
+                mergeSortMovies(movieMS, 0, movieMS.size() - 1);
                 // merge sort
                 isMovieMS = true;
             }
@@ -437,5 +438,56 @@ void MovieQuickSort(vector<pair<string, double>> &movieQS, int low, int high) { 
         int pivotIndex = MoviePartition(movieQS, low, high);
         MovieQuickSort(movieQS, low, pivotIndex - 1); // bottom half
         MovieQuickSort(movieQS, pivotIndex + 1, high); // top half
+    }
+}
+
+
+void mergeMovies(vector<pair<string, double>> movieMS, int left, int mid, int right) {
+
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+        int X[n1], Y[n2];
+
+        for(int i = 0; i < n1; i++) {
+            X[i] = movieMS[left+1].second;
+        }
+        for(int j = 0; j < n2; j++) {
+            Y[j] = movieMS[mid + 1 + j].second;
+        }
+        int i, j, k;
+        i = 0;
+        j = 0;
+        k = left;
+
+        while(i < n1 && j < n2) {
+            if(X[i] <= Y[j]) {
+                movieMS[k].second = X[i];
+                i++;
+            } else {
+                movieMS[k].second = Y[j];
+                j++;
+            }
+            k++;
+        }
+        while(i < n1) {
+            movieMS[k].second = X[i];
+            i++;
+            k++;
+        }
+        while(j < n2) {
+            movieMS[k].second = Y[j];
+            j++;
+            k++;
+        }
+    }
+
+void mergeSortMovies(vector<pair<string, double>> movieMS, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+        mergeSortMovies(movieMS, left, mid);
+        mergeSortMovies(movieMS, mid+1, right);
+
+        mergeMovies(movieMS, left, mid, right);
+
     }
 }
