@@ -92,6 +92,7 @@ int main(){
             //write a function that stores actors in order of ranking using merge sort
             if(!isActorMS) { // prevents from sorting an already sorted vector
                 StoreActorVec(data, actorMS);
+                mergeSortActors(actorMS,0,actorMS.size() - 1);
                 // merge sort
                 isActorMS = true;
             }
