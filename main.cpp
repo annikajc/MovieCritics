@@ -77,22 +77,12 @@ int main(){
             /* Implement Actor Map */
             StoreActorMap(data, actorMap);
             SearchActor(inputName, actorMap);
-<<<<<<< HEAD
-=======
-            //implement printing individual rank
-            cout << "Number of actors: " << actorMap.size() << "\n";
->>>>>>> origin/main
         }
 
         else if (menu1 == 2){
             /* Implement Movie Map */
             StoreMovieMap(data, movieMap);
             SearchMovie(inputName, movieMap);
-<<<<<<< HEAD
-=======
-            //implement printing individual rank
-            cout << "Number of movies: " << movieMap.size() << "\n";
->>>>>>> origin/main
         }
 
         else if (menu1 == 3 && menu2 == 1){
@@ -119,12 +109,8 @@ int main(){
             /* Implement Merge Sort Movie Ranking */
             if (!isMovieMS) {
                 StoreMovieVec(data, movieMS);
-<<<<<<< HEAD
                 mergeSortMovies(movieMS, 0, movieMS.size() - 1); // merge sort
-=======
-                mergeSortMovies(movieMS, 0, movieMS.size() - 1);
-                // merge sort
->>>>>>> origin/main
+                //mergeSortMovies(movieMS, 0, movieMS.size() - 1); // merge sort
                 isMovieMS = true;
             }
             TopMoviesPrint(movieMS);
