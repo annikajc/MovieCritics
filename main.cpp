@@ -26,6 +26,7 @@ int ActorPartition(vector<tuple<string, double, int>> &vec, int low, int high);
 void ActorQuickSort(vector<tuple<string, double, int>> &actorQS, int low, int high);
 int MoviePartition(vector<pair<string, double>> &vec, int low, int high);
 void MovieQuickSort(vector<pair<string, double>> &movieQS, int low, int high);
+// MergeSort
 void mergeMovies(vector<pair<string, double>> &movieMS, int left, int mid, int right);
 void mergeSortMovies(vector<pair<string, double>> &movieMS, int left, int right);
 void mergeActors(vector<tuple<string, double, int>> &actorMS, int left, int mid, int right);
@@ -88,15 +89,11 @@ int main(){
 
         else if (menu1 == 3 && menu2 == 1){
             /* Implement Merge Sort Actor Ranking */
-
-            //write a function that stores actors in order of ranking using merge sort
             if(!isActorMS) { // prevents from sorting an already sorted vector
                 StoreActorVec(data, actorMS);
                 // merge sort
                 isActorMS = true;
             }
-            //break ties with actor that appears in more movies!
-            //write a function that prints out a ranked list of the top 100 actors
             TopActorsPrint(actorMS);
         }
 
@@ -112,22 +109,17 @@ int main(){
 
         else if (menu1 == 4 && menu2 == 1){
             /* Implement Merge Sort Movie Ranking */
-
-            //write a function that stores movies in order of ranking using merge sort
             if (!isMovieMS) {
                 StoreMovieVec(data, movieMS);
-                mergeSortMovies(movieMS, 0, movieMS.size() - 1);
+                //mergeSortMovies(movieMS, 0, movieMS.size() - 1);
                 // merge sort
                 isMovieMS = true;
             }
-            //write a function that prints out a ranked list of the top 100 movies
             TopMoviesPrint(movieMS);
         }
 
         else if (menu1 == 4 && menu2 == 2){
             /* Implement Quick Sort Movie Ranking */
-
-            //write a function that stores movies in order of ranking using quick sort
             if (!isMovieQS) {
                 StoreMovieVec(data, movieQS);
                 MovieQuickSort(movieQS, 0, movieQS.size() - 1);
@@ -142,19 +134,18 @@ int main(){
 }
 
 void ReadFromFile(vector<vector<string>> &data){
-    vector<string> lineData; //vector to store all data
-    string line; //string to store each line
-    // Below should work now
-    ifstream file("cmake-build-debug/actorfilms.csv"); //file to read from
-    getline (file, line); //first line stores header
+    vector<string> lineData; // vector to store all data
+    string line; // string to store each line
+    ifstream file("actorfilms.csv"); // file to read from
+    getline (file, line); // first line reads header
 
-    while (getline (file, line)) { //read the file line by line
-        lineData.push_back(line); //adds each line to vector of lines
+    while (getline (file, line)) { // read the file line by line
+        lineData.push_back(line); // adds each line to vector of lines
         /* Parse input lines */
         data.push_back(ParseData(line));
     }
 
-    file.close(); //close the file
+    file.close(); // close the file
 }
 
 vector<string> ParseData(string line){
@@ -204,15 +195,14 @@ void StoreActorMap(vector<vector<string>> &data, map<string, pair<int, double>> 
     int count = 0;
     double totalRating = 0;
     for (auto & i : data) {
-        if (i.at(0) == currActor){
+        if (i.at(0) == currActor) {
             count++;
             totalRating += stod(i.at(2));
         }
 
-        else{
+        else {
             pair<int, double> currPair({count, totalRating/double(count)});
             actorMap.insert({currActor, currPair}); //add prev data to map
-
             currActor = i.at(0); // set curr actor to new val
             count = 1; // reset variables
             totalRating = stod(i.at(2));
@@ -221,15 +211,11 @@ void StoreActorMap(vector<vector<string>> &data, map<string, pair<int, double>> 
 }
 
 void StoreMovieMap(vector<vector<string>> &data, map<string, pair<double, vector<string>>> &movieMap){
-    //iterate through data vector
-    //check 2nd index and add that movie to map, store the rating, and store that actor into its vector of strings  - if already in map, DO NOT store rating again
-
-    for (auto & i : data) {
-        if (movieMap.find(i.at(1)) == movieMap.end()){ //if not in map yet
+    for (auto & i : data) { // iterate through data vector
+        if (movieMap.find(i.at(1)) == movieMap.end()) // if not in map yet
             movieMap.insert({i.at(1), {stod(i.at(2)), {i.at(0)}}}); //add it to map
-        }
 
-        else{
+        else{ // already in map - add actor to actorList
             pair<double, vector<string>> currPair({movieMap[i.at(1)]});
             vector<string> currVector = currPair.second; //get actor vector
             double rating = stod(i.at(2));
@@ -263,15 +249,14 @@ void StoreActorVec(vector<vector<string>> &data, vector<tuple<string, double, in
 void StoreMovieVec(vector<vector<string>> &data, vector<pair<string, double>> &movieVec) {
     for (auto & i : data) {
         bool movieFound = false;
-        for (int j = 0; j < movieVec.size(); j++) {
-            if (i.at(1) == movieVec.at(j).first) {
+        for (auto & j : movieVec) {
+            if (i.at(1) == j.first) {
                 movieFound = true;
                 break;
             }
         }
-        if (!movieFound) {
+        if (!movieFound)
             movieVec.push_back(make_pair(i.at(1), stod(i.at(2))));
-        }
     }
     cout << "StoreMovieVec Successful" << endl;
 }
@@ -280,15 +265,15 @@ void SearchActor(const string &actorName, map<string, pair<int, double>> &actorM
     bool inDataBase = false;
 
     string lowerActorName;
-    for (char i : actorName) //make input string lowercase
+    for (char i : actorName) // make input string lowercase
         lowerActorName += tolower(i);
 
     for (auto & it : actorMap) {
         string lowerName;
-        for (char i : it.first) //make current name lowercase
+        for (char i : it.first) // make current name lowercase
             lowerName += tolower(i);
 
-        if (lowerName == lowerActorName){
+        if (lowerName == lowerActorName) {
             inDataBase = true;
             if (it.second.first == 1)
                 cout << "Actor " << it.first << " has appeared in " << it.second.first
@@ -305,14 +290,14 @@ void SearchActor(const string &actorName, map<string, pair<int, double>> &actorM
 
 void SearchMovie(const string &movieName, map<string, pair<double, vector<string>>> &movieMap){
     bool inDataBase = false;
-
     string lowerMovieName;
-    for (char i : movieName) //make input string lowercase
+
+    for (char i : movieName) // make input string lowercase
         lowerMovieName += tolower(i);
 
     for (auto & it : movieMap) {
         string lowerName;
-        for (char i : it.first) //make current name lowercase
+        for (char i : it.first) // make current name lowercase
             lowerName += tolower(i);
 
         if (lowerName == lowerMovieName){
@@ -389,13 +374,11 @@ int ActorPartition(vector<tuple<string, double, int>> &vec, int low, int high) {
 }
 
 void ActorQuickSort(vector<tuple<string, double, int>> &actorQS, int low, int high) { // quick sort for actor vector
-    cout << "Sorting...\n";
     if (low < high) { // prevents from infinite recursion
         int pivotIndex = ActorPartition(actorQS, low, high);
         ActorQuickSort(actorQS, low, pivotIndex - 1); // bottom half
         ActorQuickSort(actorQS, pivotIndex + 1, high); // top half
     }
-    cout << "Sort successful\n";
 }
 
 int MoviePartition(vector<pair<string, double>> &vec, int low, int high) { // swaps based on where pivot is
@@ -428,9 +411,8 @@ int MoviePartition(vector<pair<string, double>> &vec, int low, int high) { // sw
                 pivotIndex = i;
             }
         }
-        else {
+        else
             break;
-        }
     }
 
     return pivotIndex;
@@ -447,17 +429,14 @@ void MovieQuickSort(vector<pair<string, double>> &movieQS, int low, int high) { 
 
 
 void mergeMovies(vector<pair<string, double>> &movieMS, int left, int mid, int right) {
-
         int n1 = mid - left + 1;
         int n2 = right - mid;
         int X[n1], Y[n2];
 
-        for(int i = 0; i < n1; i++) {
+        for(int i = 0; i < n1; i++)
             X[i] = movieMS[left+i].second;
-        }
-        for(int j = 0; j < n2; j++) {
+        for(int j = 0; j < n2; j++)
             Y[j] = movieMS[mid + 1 + j].second;
-        }
         int i, j, k;
         i = 0;
         j = 0;
@@ -490,7 +469,6 @@ void mergeSortMovies(vector<pair<string, double>> &movieMS, int left, int right)
         int mid = left + (right - left) / 2;
         mergeSortMovies(movieMS, left, mid);
         mergeSortMovies(movieMS, mid+1, right);
-
         mergeMovies(movieMS, left, mid, right);
 
     }
@@ -501,22 +479,18 @@ void mergeActors(vector<tuple<string,double,int>> &actorMS, int left, int mid, i
     int n2 = right - mid;
     int X[n1], Y[n2];
 
-    for(int i = 0; i < n1; i++) {
+    for(int i = 0; i < n1; i++)
         X[i] = get<2>(actorMS[left+i]);
-    }
-    for(int j = 0; j < n2; j++) {
+    for(int j = 0; j < n2; j++)
         Y[j] = get<2>(actorMS[mid + 1 + j]);
-    }
-    int i, j, k;
-    i = 0;
-    j = 0;
-    k = left;
 
+    int i = 0, j = 0, k = left;
     while(i < n1 && j < n2) {
         if(X[i] <= Y[j]) {
             get<2>(actorMS[k])= X[i];
             i++;
-        } else {
+        }
+        else {
             get<2>(actorMS[k]) = Y[j];
             j++;
         }
@@ -539,10 +513,6 @@ void mergeSortActors(vector<tuple<string, double, int>> &actorMS, int left, int 
         int mid = left + (right - left) / 2;
         mergeSortActors(actorMS, left, mid);
         mergeSortActors(actorMS, mid + 1, right);
-
         mergeActors(actorMS, left, mid, right);
-
     }
 }
-
-
