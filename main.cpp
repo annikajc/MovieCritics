@@ -66,7 +66,7 @@ int main(){
         }
 
         else if (menu1 == 3 || menu1 == 4){
-            cout << "Which sorting algorithm would you like to use?\n1. Merge Sort\n2. Quick Sort\n";
+            cout << "Which sorting algorithm would you like to use?\n1. Merge Sort\n2. Quick Sort\nPress any other key to Exit\n";
             cin >> menu2;
         }
 
@@ -77,24 +77,29 @@ int main(){
             /* Implement Actor Map */
             StoreActorMap(data, actorMap);
             SearchActor(inputName, actorMap);
+<<<<<<< HEAD
+=======
             //implement printing individual rank
             cout << "Number of actors: " << actorMap.size() << "\n";
+>>>>>>> origin/main
         }
 
         else if (menu1 == 2){
             /* Implement Movie Map */
             StoreMovieMap(data, movieMap);
             SearchMovie(inputName, movieMap);
+<<<<<<< HEAD
+=======
             //implement printing individual rank
             cout << "Number of movies: " << movieMap.size() << "\n";
+>>>>>>> origin/main
         }
 
         else if (menu1 == 3 && menu2 == 1){
             /* Implement Merge Sort Actor Ranking */
             if(!isActorMS) { // prevents from sorting an already sorted vector
                 StoreActorVec(data, actorMS);
-                mergeSortActors(actorMS,0,actorMS.size() - 1);
-                // merge sort
+                mergeSortActors(actorMS,0,actorMS.size() - 1); // merge sort
                 isActorMS = true;
             }
             TopActorsPrint(actorMS);
@@ -114,8 +119,12 @@ int main(){
             /* Implement Merge Sort Movie Ranking */
             if (!isMovieMS) {
                 StoreMovieVec(data, movieMS);
+<<<<<<< HEAD
+                mergeSortMovies(movieMS, 0, movieMS.size() - 1); // merge sort
+=======
                 mergeSortMovies(movieMS, 0, movieMS.size() - 1);
                 // merge sort
+>>>>>>> origin/main
                 isMovieMS = true;
             }
             TopMoviesPrint(movieMS);
@@ -139,7 +148,7 @@ int main(){
 void ReadFromFile(vector<vector<string>> &data){
     vector<string> lineData; // vector to store all data
     string line; // string to store each line
-    ifstream file("actorfilms.csv"); // file to read from
+    ifstream file("./actorfilms.csv"); // file to read from
     getline (file, line); // first line reads header
 
     while (getline (file, line)) { // read the file line by line
