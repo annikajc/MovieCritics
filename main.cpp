@@ -430,36 +430,40 @@ void MovieQuickSort(vector<pair<string, double>> &movieQS, int low, int high) { 
 
 
 void mergeMovies(vector<pair<string, double>> &movieMS, int left, int mid, int right) {
+
         int n1 = mid - left + 1;
         int n2 = right - mid;
-        int X[n1], Y[n2];
+        vector<pair<string,double>> X;
+        vector<pair<string,double>> Y;
 
-        for(int i = 0; i < n1; i++)
-            X[i] = movieMS[left+i].second;
-        for(int j = 0; j < n2; j++)
-            Y[j] = movieMS[mid + 1 + j].second;
+        for(int i = 0; i < n1; i++) {
+            X.push_back(movieMS[left+i]);
+        }
+        for(int j = 0; j < n2; j++) {
+            Y.push_back(movieMS[mid+1+j]);
+        }
         int i, j, k;
         i = 0;
         j = 0;
         k = left;
 
         while(i < n1 && j < n2) {
-            if(X[i] <= Y[j]) {
-                movieMS[k].second = X[i];
+            if(X[i].second >= Y[j].second) {
+                movieMS[k] = X[i];
                 i++;
             } else {
-                movieMS[k].second = Y[j];
+                movieMS[k] = Y[j];
                 j++;
             }
             k++;
         }
         while(i < n1) {
-            movieMS[k].second = X[i];
+            movieMS[k] = X[i];
             i++;
             k++;
         }
         while(j < n2) {
-            movieMS[k].second = Y[j];
+            movieMS[k] = Y[j];
             j++;
             k++;
         }
@@ -478,32 +482,37 @@ void mergeSortMovies(vector<pair<string, double>> &movieMS, int left, int right)
 void mergeActors(vector<tuple<string,double,int>> &actorMS, int left, int mid, int right) {
     int n1 = mid - left + 1;
     int n2 = right - mid;
-    int X[n1], Y[n2];
+    vector<tuple<string,double,int>>  X;
+    vector<tuple<string,double,int>> Y;
 
-    for(int i = 0; i < n1; i++)
-        X[i] = get<2>(actorMS[left+i]);
-    for(int j = 0; j < n2; j++)
-        Y[j] = get<2>(actorMS[mid + 1 + j]);
+    for(int i = 0; i < n1; i++) {
+        X.push_back(actorMS[left+i]);
+    }
+    for(int j = 0; j < n2; j++) {
+        Y.push_back(actorMS[mid+1+j]);
+    }
+    int i, j, k;
+    i = 0;
+    j = 0;
+    k = left;
 
-    int i = 0, j = 0, k = left;
     while(i < n1 && j < n2) {
-        if(X[i] <= Y[j]) {
-            get<2>(actorMS[k])= X[i];
+        if(get<1>(X[i]) >= get<1>(Y[j])) {
+            actorMS[k] = X[i];
             i++;
-        }
-        else {
-            get<2>(actorMS[k]) = Y[j];
+        } else {
+            actorMS[k] = Y[j];
             j++;
         }
         k++;
     }
     while(i < n1) {
-        get<2>(actorMS[k]) = X[i];
+        actorMS[k] = X[i];
         i++;
         k++;
     }
     while(j < n2) {
-        get<2>(actorMS[k]) = Y[j];
+        actorMS[k] =  Y[j];
         j++;
         k++;
     }
@@ -514,6 +523,8 @@ void mergeSortActors(vector<tuple<string, double, int>> &actorMS, int left, int 
         int mid = left + (right - left) / 2;
         mergeSortActors(actorMS, left, mid);
         mergeSortActors(actorMS, mid + 1, right);
+
         mergeActors(actorMS, left, mid, right);
+
     }
 }
