@@ -78,6 +78,7 @@ int main(){
             StoreActorMap(data, actorMap);
             SearchActor(inputName, actorMap);
             //implement printing individual rank
+            cout << "# actors: " << actorMap.size() << "\n";
         }
 
         else if (menu1 == 2){
@@ -85,6 +86,7 @@ int main(){
             StoreMovieMap(data, movieMap);
             SearchMovie(inputName, movieMap);
             //implement printing individual rank
+            cout << "# movies: " << movieMap.size() << "\n";
         }
 
         else if (menu1 == 3 && menu2 == 1){
@@ -145,7 +147,6 @@ void ReadFromFile(vector<vector<string>> &data){
         /* Parse input lines */
         data.push_back(ParseData(line));
     }
-
     file.close(); // close the file
 }
 
@@ -259,7 +260,6 @@ void StoreMovieVec(vector<vector<string>> &data, vector<pair<string, double>> &m
         if (!movieFound)
             movieVec.push_back(make_pair(i.at(1), stod(i.at(2))));
     }
-    cout << "StoreMovieVec Successful" << endl;
 }
 
 void SearchActor(const string &actorName, map<string, pair<int, double>> &actorMap){
