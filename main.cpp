@@ -26,7 +26,7 @@ int ActorPartition(vector<tuple<string, double, int>> &vec, int low, int high);
 void ActorQuickSort(vector<tuple<string, double, int>> &actorQS, int low, int high);
 int MoviePartition(vector<pair<string, double>> &vec, int low, int high);
 void MovieQuickSort(vector<pair<string, double>> &movieQS, int low, int high);
-// MergeSort
+// MergeSort - https://www.onlinegdb.com/HJT6FfMlv (also from in-class slides)
 void mergeMovies(vector<pair<string, double>> &movieMS, int left, int mid, int right);
 void mergeSortMovies(vector<pair<string, double>> &movieMS, int left, int right);
 void mergeActors(vector<tuple<string, double, int>> &actorMS, int left, int mid, int right);
@@ -432,10 +432,10 @@ void mergeMovies(vector<pair<string, double>> &movieMS, int left, int mid, int r
         vector<pair<string,double>> Y;
 
         for(int i = 0; i < n1; i++) {
-            X.push_back(movieMS[left+i]);
+            X.push_back(movieMS[left+i]); // pushes bottom half into a new vector of pairs
         }
         for(int j = 0; j < n2; j++) {
-            Y.push_back(movieMS[mid+1+j]);
+            Y.push_back(movieMS[mid+1+j]); //pushed top half into a new vector of pairs
         }
         int i, j, k;
         i = 0;
@@ -443,7 +443,7 @@ void mergeMovies(vector<pair<string, double>> &movieMS, int left, int mid, int r
         k = left;
 
         while(i < n1 && j < n2) {
-            if(X[i].second >= Y[j].second) {
+            if(X[i].second >= Y[j].second) { // puts highest ranking movie at the lowest unsorted index in movieMS
                 movieMS[k] = X[i];
                 i++;
             } else {
@@ -467,8 +467,8 @@ void mergeMovies(vector<pair<string, double>> &movieMS, int left, int mid, int r
 void mergeSortMovies(vector<pair<string, double>> &movieMS, int left, int right) {
     if (left < right) {
         int mid = left + (right - left) / 2;
-        mergeSortMovies(movieMS, left, mid);
-        mergeSortMovies(movieMS, mid+1, right);
+        mergeSortMovies(movieMS, left, mid); // bottom half of data set
+        mergeSortMovies(movieMS, mid+1, right);  // top half of data set
         mergeMovies(movieMS, left, mid, right);
 
     }
@@ -481,10 +481,10 @@ void mergeActors(vector<tuple<string,double,int>> &actorMS, int left, int mid, i
     vector<tuple<string,double,int>> Y;
 
     for(int i = 0; i < n1; i++) {
-        X.push_back(actorMS[left+i]);
+        X.push_back(actorMS[left+i]); // push bottom half of into a new vector of tuples
     }
     for(int j = 0; j < n2; j++) {
-        Y.push_back(actorMS[mid+1+j]);
+        Y.push_back(actorMS[mid+1+j]); // push top half into new vector of tuples
     }
     int i, j, k;
     i = 0;
@@ -492,7 +492,7 @@ void mergeActors(vector<tuple<string,double,int>> &actorMS, int left, int mid, i
     k = left;
 
     while(i < n1 && j < n2) {
-        if(get<1>(X[i]) >= get<1>(Y[j])) {
+        if(get<1>(X[i]) >= get<1>(Y[j])) { // puts highest rank at beginning of the vector
             actorMS[k] = X[i];
             i++;
         } else {
@@ -516,8 +516,8 @@ void mergeActors(vector<tuple<string,double,int>> &actorMS, int left, int mid, i
 void mergeSortActors(vector<tuple<string, double, int>> &actorMS, int left, int right) {
     if (left < right) {
         int mid = left + (right - left) / 2;
-        mergeSortActors(actorMS, left, mid);
-        mergeSortActors(actorMS, mid + 1, right);
+        mergeSortActors(actorMS, left, mid); // bottom half of data set
+        mergeSortActors(actorMS, mid + 1, right); // top half of data set
 
         mergeActors(actorMS, left, mid, right);
 
